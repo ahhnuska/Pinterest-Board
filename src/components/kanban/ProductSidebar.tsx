@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle } from "lucide-react";
+import { ComboboxBasic } from "../ui/combo";
 
 const PASTEL_COLORS = [
     "#fecaca", // red
@@ -19,7 +20,14 @@ const PASTEL_COLORS = [
     "#fbcfe8", // pink
 ];
 
-export function ProductSidebar() {
+interface User {
+    id: number;
+    username: string;
+    imageUrl: string | null;
+    role: "admin" | "staff" | "content" | null;
+}
+
+export function ProductSidebar({ users }: { users: User[] }) {
     const formRef = useRef<HTMLFormElement>(null);
 
     return (
@@ -96,6 +104,12 @@ export function ProductSidebar() {
                                         />
                                     </label>
                                 ))}
+                            </div>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label className="text-xs font-bold text-slate-400">Assigned to:</Label>
+                            <div className="flex flex-wrap gap-2">
+                                <ComboboxBasic users={users} />
                             </div>
                         </div>
 

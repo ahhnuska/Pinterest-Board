@@ -4,6 +4,7 @@ import { KanbanBoard } from "@/components/kanban/KanbanBoard";
 
 export default async function Home() {
   const products = await db.query.products.findMany();
+  const users = await db.query.users.findMany();
 
   // Ensuring types match expectations (converting colors if needed, though schema says it's mode: json string[])
   const typedProducts = products.map(p => ({
@@ -13,7 +14,7 @@ export default async function Home() {
 
   return (
     <main className="flex h-screen w-full bg-[#fcfcfd] overflow-hidden font-sans">
-      <ProductSidebar />
+      <ProductSidebar users={users} />
       <div className="flex-1 p-8 overflow-hidden flex flex-col">
         <div className="mb-8 flex items-center justify-between">
           <div>

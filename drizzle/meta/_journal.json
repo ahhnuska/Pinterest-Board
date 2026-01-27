@@ -22,6 +22,13 @@
       "when": 1769428040471,
       "tag": "0002_special_metal_master",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1769506127431,
+      "tag": "0003_lonely_gressill",
+      "breakpoints": true
     }
   ]
 }

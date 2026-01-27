@@ -24,3 +24,11 @@ export const products = sqliteTable("products", {
         compareLink?: string;
     }>(),
 });
+export const users = sqliteTable("users", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    username: text("username").notNull(),
+    imageUrl: text("image_url"),
+    role: text("role").$type<"admin" | "staff" | "content">().default("staff"),
+
+
+});
