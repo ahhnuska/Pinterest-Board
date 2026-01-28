@@ -6,7 +6,11 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function getProducts() {
-    return await db.query.products.findMany();
+    return await db.query.products.findMany({
+        with: {
+            creator: true
+        }
+    });
 }
 
 export async function createProduct(formData: FormData) {
@@ -14,6 +18,8 @@ export async function createProduct(formData: FormData) {
     const price = parseFloat(formData.get("price") as string);
     const desc = formData.get("desc") as string;
     const color = formData.get("color") as string;
+    const createdByStr = formData.get("createdBy") as string;
+    const createdBy = createdByStr || null;
 
     await db.insert(products).values({
         name,
@@ -21,6 +27,7 @@ export async function createProduct(formData: FormData) {
         desc,
         colors: [color],
         status: "backlog",
+        createdBy,
     });
 
     revalidatePath("/");

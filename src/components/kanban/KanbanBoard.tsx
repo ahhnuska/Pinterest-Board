@@ -23,18 +23,19 @@ import { KanbanColumn } from "./KanbanColumn";
 import { KanbanCard } from "./KanbanCard";
 import { updateProductStatus } from "@/app/actions";
 
-interface Product {
+export interface Product {
     id: number;
     name: string;
     price: number;
     desc: string | null;
     colors: string[] | null;
     status: "backlog" | "doing" | "done" | null;
-}
-interface User {
-    id: number;
-    name: string;
-    role: "admin" | "staff" | "content";
+    creator?: {
+        id: string;
+        username: string | null;
+        image: string | null;
+        role: "admin" | "staff" | "content" | null;
+    } | null;
 }
 
 const COLUMNS = [
@@ -45,7 +46,6 @@ const COLUMNS = [
 
 export function KanbanBoard({ initialProducts }: { initialProducts: Product[] }) {
     const [products, setProducts] = useState(initialProducts);
-    const [users, setUser] = useState<User | null>(null);
     const [activeProduct, setActiveProduct] = useState<Product | null>(null);
     const [originalStatus, setOriginalStatus] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);
@@ -75,12 +75,6 @@ export function KanbanBoard({ initialProducts }: { initialProducts: Product[] })
             setActiveProduct(product);
             setOriginalStatus(product.status);
         }
-        const user = users.find((u) => u.id === active.id);
-        if (user) {
-            setActiveUser(user);
-            setOriginalRole(user.role);
-        }
-
     }
 
     function handleDragOver(event: DragOverEvent) {

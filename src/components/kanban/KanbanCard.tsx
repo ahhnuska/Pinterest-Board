@@ -5,15 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
 import { deleteProduct } from "@/app/actions";
-
-interface Product {
-    id: number;
-    name: string;
-    price: number;
-    desc: string | null;
-    colors: string[] | null;
-    status: "backlog" | "doing" | "done" | null;
-}
+import { Product } from "./KanbanBoard";
 
 export function KanbanCard({ product }: { product: Product }) {
     const {
@@ -50,7 +42,25 @@ export function KanbanCard({ product }: { product: Product }) {
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
                     <p className="text-xs text-slate-500 line-clamp-2 mb-2">{product.desc}</p>
-                    <p className="text-xs font-bold text-slate-600">${product.price}</p>
+                    <div className="flex items-center justify-between">
+                        <p className="text-xs font-bold text-slate-600">${product.price}</p>
+                        {product.creator && (
+                            <div className="flex items-center gap-1.5 grayscale-[0.5] opacity-80">
+                                {product.creator.image ? (
+                                    <img
+                                        src={product.creator.image}
+                                        alt={product.creator.username || "User"}
+                                        className="w-5 h-5 rounded-full object-cover border border-slate-200"
+                                    />
+                                ) : (
+                                    <div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500">
+                                        {(product.creator.username || "?")[0].toUpperCase()}
+                                    </div>
+                                )}
+                                <span className="text-[10px] font-medium text-slate-500">{product.creator.username || "Unknown"}</span>
+                            </div>
+                        )}
+                    </div>
                 </CardContent>
             </Card>
         </div>

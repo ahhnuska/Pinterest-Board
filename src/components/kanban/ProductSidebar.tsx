@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle } from "lucide-react";
-import { ComboboxBasic } from "../ui/combo";
+import { PlusCircle, LogOut } from "lucide-react";
+import { ComboboxBasic, type User } from "../ui/combo";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const PASTEL_COLORS = [
     "#fecaca", // red
@@ -20,15 +22,15 @@ const PASTEL_COLORS = [
     "#fbcfe8", // pink
 ];
 
-interface User {
-    id: number;
-    username: string;
-    imageUrl: string | null;
-    role: "admin" | "staff" | "content" | null;
-}
-
 export function ProductSidebar({ users }: { users: User[] }) {
     const formRef = useRef<HTMLFormElement>(null);
+    const { data: session } = authClient.useSession();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await authClient.signOut();
+        router.refresh(); // Refresh to trigger the redirect in layout/page
+    };
 
     return (
         <div className="w-[350px] flex flex-col gap-6 border-r border-slate-100 p-6 h-full bg-white">
@@ -109,7 +111,7 @@ export function ProductSidebar({ users }: { users: User[] }) {
                         <div className="grid gap-2">
                             <Label className="text-xs font-bold text-slate-400">Assigned to:</Label>
                             <div className="flex flex-wrap gap-2">
-                                <ComboboxBasic users={users} />
+                                <ComboboxBasic users={users} name="createdBy" />
                             </div>
                         </div>
 
@@ -120,7 +122,27 @@ export function ProductSidebar({ users }: { users: User[] }) {
                 </CardContent>
             </Card>
 
-            <div className="mt-auto">
+            <div className="mt-auto space-y-4">
+                {session?.user && (
+                    <div className="flex items-center gap-3 p-2 rounded-2xl bg-slate-50/50 border border-slate-50 transition-colors group">
+                        <img
+                            src={session.user.image || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.name}`}
+                            alt={session.user.name || "User"}
+                            className="w-10 h-10 rounded-xl bg-slate-200 object-cover shadow-sm"
+                        />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-slate-800 truncate">{session.user.name}</p>
+                            <p className="text-xs text-slate-400 truncate font-medium">{session.user.email}</p>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all active:scale-90"
+                            title="Logout"
+                        >
+                            <LogOut size={18} />
+                        </button>
+                    </div>
+                )}
                 <p className="text-[10px] text-slate-400 text-center font-medium">Design by Antigravity AI • 2026</p>
             </div>
         </div>

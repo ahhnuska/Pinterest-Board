@@ -1,13 +1,28 @@
 import { db } from "@/db";
 import { ProductSidebar } from "@/components/kanban/ProductSidebar";
-import { KanbanBoard } from "@/components/kanban/KanbanBoard";
+import { KanbanBoard, Product } from "@/components/kanban/KanbanBoard";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const products = await db.query.products.findMany();
-  const users = await db.query.users.findMany();
+  const products = await db.query.products.findMany({
+    with: {
+      creator: true
+    }
+  });
+  const users = await db.query.user.findMany();
 
-  // Ensuring types match expectations (converting colors if needed, though schema says it's mode: json string[])
-  const typedProducts = products.map(p => ({
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+
+  if (!session?.user) {
+    redirect("/home"); // Redirecting to roles for now as there's no login page yet
+  }
+
+  // Ensuring types match expectations
+  const typedProducts: Product[] = products.map(p => ({
     ...p,
     status: (p.status || "backlog") as "backlog" | "doing" | "done"
   }));
