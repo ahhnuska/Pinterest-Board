@@ -27,7 +27,7 @@ export function KanbanColumn({ id, title, products, bgColor }: ColumnProps) {
     return (
         <div className="flex flex-col h-full w-full min-w-[300px] bg-slate-50/50 rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-4">
-                <div className={`w-3 h-3 rounded-full ${bgColor}`} />
+                <div className={`w-3 h-3 rounded-full {bgColor}`} />
                 <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">{title}</h2>
                 <span className="ml-auto text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
                     {products.length}

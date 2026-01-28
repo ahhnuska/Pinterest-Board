@@ -66,7 +66,7 @@ export function ProductSidebar({ users }: { users: User[] }) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="price" className="text-xs font-bold text-slate-400">Price ($)</Label>
+                            <Label htmlFor="price" className="text-xs font-bold text-slate-400">Price (NPR)</Label>
                             <Input
                                 id="price"
                                 name="price"
