@@ -31,6 +31,11 @@ interface Product {
     colors: string[] | null;
     status: "backlog" | "doing" | "done" | null;
 }
+interface User {
+    id: number;
+    name: string;
+    role: "admin" | "staff" | "content";
+}
 
 const COLUMNS = [
     { id: "backlog", title: "Backlog", bgColor: "bg-blue-300" },
@@ -40,6 +45,7 @@ const COLUMNS = [
 
 export function KanbanBoard({ initialProducts }: { initialProducts: Product[] }) {
     const [products, setProducts] = useState(initialProducts);
+    const [users, setUser] = useState<User | null>(null);
     const [activeProduct, setActiveProduct] = useState<Product | null>(null);
     const [originalStatus, setOriginalStatus] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);
@@ -69,6 +75,12 @@ export function KanbanBoard({ initialProducts }: { initialProducts: Product[] })
             setActiveProduct(product);
             setOriginalStatus(product.status);
         }
+        const user = users.find((u) => u.id === active.id);
+        if (user) {
+            setActiveUser(user);
+            setOriginalRole(user.role);
+        }
+
     }
 
     function handleDragOver(event: DragOverEvent) {
