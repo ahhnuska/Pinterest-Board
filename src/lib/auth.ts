@@ -8,6 +8,16 @@ export const auth = betterAuth({
     }),
 
 
+    user: {
+        additionalFields: {
+            role: {
+                type: "string",
+                required: false,
+                defaultValue: "staff",
+                input: false, // Don't let users set their own role during sign up
+            },
+        },
+    },
     emailAndPassword: {
         enabled: true,
     },
@@ -17,5 +27,4 @@ export const auth = betterAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         },
     },
-
 });

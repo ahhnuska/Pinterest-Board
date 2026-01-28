@@ -22,6 +22,7 @@ import {
 import { KanbanColumn } from "./KanbanColumn";
 import { KanbanCard } from "./KanbanCard";
 import { updateProductStatus } from "@/app/actions";
+import { authClient } from "@/lib/auth-client";
 
 export interface Product {
     id: number;
@@ -49,11 +50,14 @@ export function KanbanBoard({ initialProducts }: { initialProducts: Product[] })
     const [activeProduct, setActiveProduct] = useState<Product | null>(null);
     const [originalStatus, setOriginalStatus] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);
+    const { data: session } = authClient.useSession() as { data: { user: { role?: string } } | null };
 
     useEffect(() => {
         setMounted(true);
         setProducts(initialProducts);
     }, [initialProducts]);
+
+    const canMove = session?.user.role === "admin" || session?.user.role === "staff";
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -69,6 +73,7 @@ export function KanbanBoard({ initialProducts }: { initialProducts: Product[] })
     if (!mounted) return null;
 
     function handleDragStart(event: DragStartEvent) {
+        if (!canMove) return;
         const { active } = event;
         const product = products.find((p) => p.id === active.id);
         if (product) {
@@ -78,6 +83,7 @@ export function KanbanBoard({ initialProducts }: { initialProducts: Product[] })
     }
 
     function handleDragOver(event: DragOverEvent) {
+        if (!canMove) return;
         const { active, over } = event;
         if (!over) return;
 
@@ -105,6 +111,7 @@ export function KanbanBoard({ initialProducts }: { initialProducts: Product[] })
     }
 
     async function handleDragEnd(event: DragEndEvent) {
+        if (!canMove) return;
         const { active, over } = event;
 
         if (!over || !activeProduct) {
@@ -133,7 +140,7 @@ export function KanbanBoard({ initialProducts }: { initialProducts: Product[] })
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
         >
-            <div className="flex gap-6 h-full overflow-x-auto pb-4">
+            <div className={`flex gap-6 h-full overflow-x-auto pb-4 ${!canMove ? 'opacity-90 pointer-events-none' : ''}`}>
                 {COLUMNS.map((col) => (
                     <KanbanColumn
                         key={col.id}
@@ -156,6 +163,11 @@ export function KanbanBoard({ initialProducts }: { initialProducts: Product[] })
             }}>
                 {activeProduct ? <KanbanCard product={activeProduct} /> : null}
             </DragOverlay>
+            {!canMove && (
+                <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full border border-slate-200 shadow-sm">
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Read Only Mode</p>
+                </div>
+            )}
         </DndContext>
     );
 }
