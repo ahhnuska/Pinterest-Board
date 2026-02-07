@@ -5,21 +5,42 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, ChevronLeft } from "lucide-react";
 import { createUser } from "./action";
 import { ComboStaff } from "./comboStaff";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useEffect } from "react";
 
 
 export default function RolesPage() {
     const formRef = useRef<HTMLFormElement>(null);
+    const { data: session, isPending } = authClient.useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!isPending && (!session || session.user.role !== "admin")) {
+            router.push("/");
+        }
+    }, [session, isPending, router]);
+
+    if (isPending || !session || session.user.role !== "admin") {
+        return null; // Or a loading spinner
+    }
 
     return (
         <div className="w-[350px] flex flex-col gap-6 border-r border-slate-100 p-6 h-full bg-white">
-            <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white">
-                    <PlusCircle size={20} />
+            <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white">
+                        <PlusCircle size={20} />
+                    </div>
+                    <h1 className="text-xl font-bold text-slate-800 tracking-tight">User Management</h1>
                 </div>
-                <h1 className="text-xl font-bold text-slate-800 tracking-tight">User Management</h1>
+                <Link href="/" className="p-2 text-slate-400 hover:text-indigo-500 transition-all active:scale-90" title="Back to Board">
+                    <ChevronLeft size={20} />
+                </Link>
             </div>
 
             <Card className="border-none shadow-none bg-slate-50/50 rounded-2xl">

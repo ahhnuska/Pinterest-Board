@@ -1,4 +1,6 @@
 import { db } from "@/db";
+import { user } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { ProductSidebar } from "@/components/kanban/ProductSidebar";
 import { KanbanBoard, Product } from "@/components/kanban/KanbanBoard";
 import { auth } from "@/lib/auth";
@@ -6,20 +8,26 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+
+  if (!session?.user) {
+    redirect("/home");
+  }
+
+  // Auto-promote the owner to admin if they login with staff role
+  if (session.user.email === "anuskashakya8@gmail.com" && session.user.role !== "admin") {
+    await db.update(user).set({ role: "admin" }).where(eq(user.id, session.user.id));
+    redirect("/"); // Refresh to update session
+  }
+
   const products = await db.query.products.findMany({
     with: {
       creator: true
     }
   });
   const users = await db.query.user.findMany();
-
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
-
-  if (!session?.user) {
-    redirect("/home"); // Redirecting to roles for now as there's no login page yet
-  }
 
   // Ensuring types match expectations
   const typedProducts: Product[] = products.map(p => ({

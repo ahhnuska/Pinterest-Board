@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, LogOut } from "lucide-react";
+import { PlusCircle, LogOut, Users } from "lucide-react";
 import { ComboboxBasic, type User } from "../ui/combo";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const PASTEL_COLORS = [
     "#fecaca", // red
@@ -24,7 +25,7 @@ const PASTEL_COLORS = [
 
 export function ProductSidebar({ users }: { users: User[] }) {
     const formRef = useRef<HTMLFormElement>(null);
-    const { data: session } = authClient.useSession() as { data: { user: { role?: string; name: string; email: string; image?: string | null } } | null };
+    const { data: session } = authClient.useSession();
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -34,11 +35,18 @@ export function ProductSidebar({ users }: { users: User[] }) {
 
     return (
         <div className="w-[350px] flex flex-col gap-6 border-r border-slate-100 p-6 h-full bg-white">
-            <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white">
-                    <PlusCircle size={20} />
+            <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center text-white">
+                        <PlusCircle size={20} />
+                    </div>
+                    <h1 className="text-xl font-bold text-slate-800 tracking-tight">Product Lab</h1>
                 </div>
-                <h1 className="text-xl font-bold text-slate-800 tracking-tight">Product Lab</h1>
+                {session?.user.role === "admin" && (
+                    <Link href="/roles" className="p-2 text-slate-400 hover:text-indigo-500 transition-all active:scale-90" title="Manage Users">
+                        <Users size={18} />
+                    </Link>
+                )}
             </div>
 
             {session?.user.role === "admin" ? (

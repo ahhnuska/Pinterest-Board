@@ -23,6 +23,7 @@ export default function Home() {
             await authClient.signIn.social({
                 provider: "google",
                 callbackURL: "/"
+
             });
         } catch (error) {
             console.error("Sign in failed", error);
@@ -151,7 +152,7 @@ export default function Home() {
             </div>
 
             <div className="absolute bottom-8 text-slate-400 text-sm flex items-center gap-4">
-                <span>© 2024 Junu Board</span>
+                <span>© 2026 Junu Board</span>
                 <span className="w-1 h-1 bg-slate-200 rounded-full"></span>
                 <span className="flex items-center gap-1 hover:text-slate-600 cursor-pointer">Documentation <ArrowRight className="w-3 h-3" /></span>
             </div>

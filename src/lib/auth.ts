@@ -1,23 +1,26 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
+import { admin } from "better-auth/plugins";
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
         provider: "sqlite",
     }),
 
-
+    plugins: [
+        admin()
+    ],
     user: {
         additionalFields: {
-            role: {
+            username: {
                 type: "string",
                 required: false,
-                defaultValue: "staff",
-                input: false, // Don't let users set their own role during sign up
             },
         },
     },
+
+
     emailAndPassword: {
         enabled: true,
     },
